@@ -1,2 +1,31 @@
-Y29uc3QgeyBzcmMsIGRlc3QgLCBzZXJpZXMgfSA9IHJlcXVpcmUoJ2d1bXAnKTsKY29uc3QgZnMgPSByZXF1aXJlKCdmcycpOwpuY29uc3QgcGF0aCA9IHJlcXVpcmUoJ3BhdGgnKTsKCmZ1bmN0aW9uIGJ1aWxkSWNvbnMoY2IpIHsKICAvLyBGb3IgdGhpcyBtaW5pbWFsIHNjYWZmb2xkLCBjb3B5IHN2ZyBmaWxlcyB0byBkaXN0L2ljb25zCiAgY29uc3QgaWNvbnNEaXIgPSBwYXRoLmpvaW4oX19fZGlybmFtZV9fLCAnbm9kZXMnKTsKICBjb25zdCBvdXREaXIgPSBwYXRoLmpvaW4oX19fZGlybmFtZV9fLCAnZGlzdCcsICdub2RlcycpOwogIGlmICghZnMuZXhpc3RzU3luYyhv dXREaXIpKSB7CiAgICBmcy5ta2Rpc1N5bmMo b3V0 RGly LC B7IHJlY3Vyc2l2ZTogdHJ1ZSB9KTsKICB9CiAgICAvLyBDb3B5IGFueSBzdmcgZmlsZXMgdW5kZXIgbm9kZXMgdG8gZGlzdAogICBmdW5jdGlvbiBjb3B5UmVjdXJzaXZlKHNyY0RpciwgZGVzdERpcikgewogICAgY29uc3QgZW50cmllcyA9IGZzLmVyZWFkZGlyU3luYyhzcmNEaXIsIHsgd2l0aERpcmVudHM6IHRydWUgfSk7CiAgICBmb3IgKGNvbnN0IGUgb2YgZW50cmllcykgewogICAgICBjb25zdCBzclBhdGggPSBwYXRoLmpvaW4oc3JD
-aXIpOwogICAgICBjb25zdCBkZXNwUGF0aCA9IHBhdGguam9pbigkK2UubmFtZSk7CiAgICAgIGlmIChlLm  .... (truncated)
+const { src, dest, series } = require('gulp');
+const fs = require('fs');
+const path = require('path');
+
+function buildIcons(cb) {
+  // For this minimal scaffold, copy svg files to dist/icons
+  const iconsDir = path.join(__dirname, 'nodes');
+  const outDir = path.join(__dirname, 'dist', 'nodes');
+  if (!fs.existsSync(outDir)) {
+    fs.mkdirSync(outDir, { recursive: true });
+  }
+  // Copy any svg files under nodes to dist
+  function copyRecursive(srcDir, destDir) {
+    const entries = fs.readdirSync(srcDir, { withFileTypes: true });
+    for (const e of entries) {
+      const srcPath = path.join(srcDir, e.name);
+      const destPath = path.join(destDir, e.name);
+      if (e.isDirectory()) {
+        if (!fs.existsSync(destPath)) fs.mkdirSync(destPath);
+        copyRecursive(srcPath, destPath);
+      } else if (e.isFile() && srcPath.endsWith('.svg')) {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    }
+  }
+  copyRecursive(iconsDir, outDir);
+  cb();
+}
+
+exports['build:icons'] = buildIcons;
+exports.default = series(buildIcons);

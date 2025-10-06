@@ -1,1 +1,4 @@
-bm9kZV9tb2R1bGVzLwpkaXN0LwouKi5sb2cKLnZjb2RlLw==
+node_modules/
+dist/
+*.log
+.vscode/
